@@ -1,0 +1,33 @@
+const Files = DBM.Files = {};
+
+Files.data = {};
+Files.writers = {};
+Files.crypto = require('crypto');
+Files.dataFiles = [
+	'commands.json',
+	'events.json',
+	'settings.json',
+	'players.json',
+	'servers.json',
+	'serverVars.json',
+	'globalVars.json'
+];
+
+Files.startBot = function() {
+	const fs = require('fs');
+	const path = require('path');
+	if(process.env['IsDiscordBotMakerTest'] === 'true') {
+		Actions.location = process.env['ActionsDirectory'];
+		this.initBotTest();
+	} else if(process.argv.length >= 3 && fs.existsSync(process.argv[2])) {
+		Actions.location = process.argv[2];
+	} else {
+		Actions.location = path.join(process.cwd(), 'actions')
+	}
+	if(typeof Actions.location === 'string' && fs.existsSync(Actions.location)) {
+		Actions.initMods();
+		this.readData(Bot.init.bind(Bot));
+	} else {
+		console.error('Please copy the "Actions" folder from the Discord Bot Maker directory to this bot\'s directory: \n' + Actions.location);
+	}
+};
